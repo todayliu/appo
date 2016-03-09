@@ -7,5 +7,6 @@ return array(
 	'dbname'		=> 'jd',
 	'prefix'		=> 'ecs_',
 	'charset'		=> 'utf-8',
-	'cache'			=> 'false'
+	'cache'			=> 'memcache',
+	'cachehost' 	=> 'localhost:11211'
 );

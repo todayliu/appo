@@ -1,9 +1,9 @@
 <?php
 header("Content-type: text/html; charset=utf-8");
 define('MODULE_DIR', './module/');
-$config = require("./libs/config.class.php");
-require_once("./libs/argument.class.php");
-require_once("./libs/check.class.php");
+// $config = require("./libs/config.class.php");
+require("./libs/argument.class.php");
+require("./libs/check.class.php");
 
 $pathinfo=$_SERVER["PATH_INFO"];   //计算出index.php后面的字段 index.php/c/methon/id/3
 $pathinfo=trim($pathinfo,'/');
@@ -36,9 +36,9 @@ if(file_exists($module_file)){
     $obj_module=new $module_name($args);    //实例化模块m
     if(is_callable(array($obj_module, $method_name))){    //该方法是否能被调用
         $res=$obj_module->$method_name();    //执行a方法,并把key-value参数的数组传过去''
-        if($config["result_type"] == "json"){
+        // if($config["result_type"] == "json"){
             echo json_encode($res);
-        }
+        // }
     }else{
         echo json_encode(array("response"=>500,"responseText"=>'该方法不能被调用'));
     	exit;

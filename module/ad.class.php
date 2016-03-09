@@ -3,17 +3,15 @@ include_once "/../libs/module.class.php";
 class Ad extends Module{
 	
 	function adlist(){
-		$this->check();
+		// $this->check();
+		$this->useCache();
 		$id = $this->getArgs("id",ArgumentType::$NUMBER,100);
 		$this->setResult("id",$id);
 		$this->setResult("response",200);
-
-// $memcachehost = '192.168.6.191';
-// $memcacheport = 11211;
-// $memcachelife = 60;
-// $memcache = new Memcache;
-// $memcache->connect($memcachehost,$memcacheport) or die ("Could not connect");
-		
+		$key = $this->getCache('some_key');
+		if($key == false){
+			$this->setCache("some_key","this is from memcache",0,30);
+		}
 		return $this->result;
 	}
 
