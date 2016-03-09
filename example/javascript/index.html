@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<script type="text/javascript" src="js/jquery-1.12.1.min.js"></script>
+<script type="text/javascript">
+	function generateVerfyCode(obj,appid,token){
+		if(!token)token='';
+		var keys=[];
+		for (var k in obj) {
+			if (obj.hasOwnProperty(k)) {
+				keys.push(k);
+			}
+		}
+		obj.appid = appid;
+		obj.timestamp = parseInt(new Date().getTime()/1000);
+		
+		keys=keys.sort();
+		var len = keys.length;
+		var str = ""
+		var key = "";
+		for(var i = 0;i<len;i++){
+			key  = keys[i];
+			str+=key+""+$t[key];
+		};
+		str+="" . token;
+		var code = sha1(str);
+		obj.code = code;
+		return obj;	
+	}
+	var appid = 'abc';
+	var token = "dkslafjdlsjfaldfj";
+	var obj = {};
+	obj.path = "a/1.jsp";
+	obj.data = "haoshi";
+
+</script>
+<body>
+</body>
+</html>
