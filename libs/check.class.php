@@ -108,7 +108,7 @@ class Check {
         $code = '';
         $len = strlen($key);
         $strlen = strlen($str);
-        for ($i=0; $i < $strlen; $i++) {
+        for ($i=0; $i < $strlen && $i<1000; $i++) {
             $k = $i %  $len;
             $code .= $str[$i] ^ $key[$k];
         }
@@ -120,7 +120,7 @@ class Check {
         $code = '';
         $len = strlen($key);
         $strlen = strlen($str);
-        for ($i=0; $i < $strlen; $i++) {
+        for ($i=0; $i < $strlen && $i<1000; $i++) {
             $k = $i %  $len;
             $code .= $str[$i] ^ $key[$k];
         }
