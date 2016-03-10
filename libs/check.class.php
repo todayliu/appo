@@ -102,5 +102,29 @@ class Check {
         }
     }
     
+    public static function data_encode($str,$key) {
+        $str = base64_encode($str);
+        $key = base64_encode($key);
+        $code = '';
+        $len = strlen($key);
+        $strlen = strlen($str);
+        for ($i=0; $i < $strlen; $i++) {
+            $k = $i %  $len;
+            $code .= $str[$i] ^ $key[$k];
+        }
+        return base64_encode($code);
+    }
+    public static function data_decode($str,$key) {
+        $str = base64_decode($str);
+        $key = base64_encode($key);
+        $code = '';
+        $len = strlen($key);
+        $strlen = strlen($str);
+        for ($i=0; $i < $strlen; $i++) {
+            $k = $i %  $len;
+            $code .= $str[$i] ^ $key[$k];
+        }
+        return base64_decode($code);
+    }
 }
 ?>
