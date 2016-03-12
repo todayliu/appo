@@ -4,8 +4,9 @@ define(['appAjax','encrypt','live'], function(appAjax,encrypt,live) {
 		url:"http://appo.com/app/adlist",
 		type:"POST",
 		debugLog:true,
-		timeout:5000,
-		decodeFunc:encrypt.decode("12345"),
+		timeout:3000,
+		data:{a:123,b:567},
+		decodeFunc:encrypt.decode("12345a"),
 	}).done(function(data){
 		console.log(data);
 		return true;

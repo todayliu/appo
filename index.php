@@ -42,7 +42,7 @@ if(file_exists($module_file)){
     if(is_callable(array($obj_module, $method_name))){    //该方法是否能被调用
         $res=$obj_module->$method_name();    //执行a方法,并把key-value参数的数组传过去''
         // if($config["result_type"] == "json"){
-           echo check::data_encode(json_encode($res),'12345');
+           echo check::data_encode(json_encode($res),'12345a');
         // }
     }else{
         echo json_encode(array("response"=>500,"responseText"=>'该方法不能被调用'));

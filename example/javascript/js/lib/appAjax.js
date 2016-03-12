@@ -51,16 +51,17 @@ define(['js/lib/deferred.class.js'], function(Deferred) {
 					if(timer != null){
 						clearTimeout(timer);
 					}
+					var responseText =typeof config.decodeFunc == "function" ? config.decodeFunc(xmlhttp.responseText) : xmlhttp.responseText;
 					if (config.success) {
-						config.success(xmlhttp.responseText, xmlhttp.readyState);
+						config.success(responseText);
 					}
-					defer.resolve(typeof config.decodeFunc == "function" ? config.decodeFunc(xmlhttp.responseText) : xmlhttp.responseText);
+					defer.resolve(responseText);
 					if (config.debugLog == true) {
 						console.log("SuccessResponse");
 					}
 
 					if (config.debugLog == true) {
-						console.log("Response Data:" + xmlhttp.responseText);
+						console.log('responseText:' + responseText);
 					}
 				}else{
 					if(timer != null){
