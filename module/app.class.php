@@ -14,6 +14,7 @@ class App extends Module{
 		// if($key == false){
 		// 	$this->setCache("some_key","this is from memcache",0,30);
 		// }
+		//见libs/module.class.php
 		$this->resolve();
 	}
 
@@ -22,7 +23,8 @@ class App extends Module{
 		$this->setResult("id",6);
 		$this->setResult("response",200);
 		echo '请看module/app.class.php' . '<br />';
-		return $this->result;
+		echo '请运行example/javascript/index.html'. '<br />';
+		$this->reject(200,'测试');
 	}
 
 	// 析构函数

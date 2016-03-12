@@ -4,7 +4,7 @@ return array(
 	'dbhost'		=> 'localhost:3306',
 	'dbuser'		=> 'root',
 	'dbpass'		=> 'qazxsw',	
-	'dbname'		=> 'jd',
+	'dbname'		=> 'jshop',
 	'prefix'		=> 'ecs_',
 	'charset'		=> 'utf-8',
 	'cache'			=> 'memcache',
