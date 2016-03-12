@@ -1,4 +1,4 @@
-define([], function() {
+define(["sha1"], function(sha1) {
 	function base64_encode(str) {
 		var str = toUTF8(str);
 		var base64EncodeChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
@@ -213,6 +213,56 @@ define([], function() {
 		}
 		return out.join('');
 	}
+
+
+	function generateEncode(obj,token){
+		if(typeof token == "undefined")token='';
+		obj = obj || {};
+		obj.timestamp = parseInt(new Date().getTime()/1000);
+		var keys=[];
+		for (var k in obj) {
+			if (obj.hasOwnProperty(k)) {
+				keys.push(k);
+			}
+		}
+		
+		keys = keys.sort();
+		var len = keys.length;
+		var str = ""
+		var key = "";
+		for(var i = 0;i<len;i++){
+			key  = keys[i];
+			str+=(key+obj[key]);
+		}
+		str +=  token;
+		var code = sha1(str);
+		obj.code = code;
+		return obj;	
+	}
+	function generateVerfyCode(obj,token){
+		if(typeof token == "undefined")token='';
+		obj = obj || {};
+		var code = obj["code"];
+		delete obj["code"];
+		var keys=[];
+		for (var k in obj) {
+			if (obj.hasOwnProperty(k)) {
+				keys.push(k);
+			}
+		}
+		
+		keys = keys.sort();
+		var len = keys.length;
+		var str = ""
+		var key = "";
+		for(var i = 0;i<len;i++){
+			key  = keys[i];
+			str+=(key+obj[key]);
+		}
+		str +=  token;
+		return code = sha1(str);
+	}
+
 	var encrypt ={ 
 		decode:function(key) {
 			return function(str){
@@ -225,12 +275,18 @@ define([], function() {
 					k = i % len;
 					code += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(k));
 				}
-				return base64_decode(code);
+				var txt = base64_decode(code);
+				var r   = JSON.parse(txt);
+				if(generateVerfyCode(r,key)){
+					return r;
+				}
+				return false;
 			}
 		},
-		encode:function(key) {
-			return function(str){
+		encode:function(appid,key) {
+			return function(obj){
 				if(typeof(key)=="undefined")key='';
+				var str = JSON.stringify(generateEncode(obj,key));
 				str = base64_encode(str);
 				key = base64_encode(key);
 				len = key.length;
@@ -239,7 +295,7 @@ define([], function() {
 					k = i % len;
 					code += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(k));
 				}
-				return base64_encode(code);
+				return appid+','+base64_encode(code);
 			}
 		}
 

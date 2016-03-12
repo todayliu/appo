@@ -3,16 +3,18 @@ include "/../libs/module.class.php";
 class App extends Module{
 	
 	function adlist(){
-		// $this->check();
+		$this->check();
 		// $this->useCache();
 		$id = $this->getArgs("id",ArgumentType::$NUMBER,100);
+		$a = $this->getArgs("a");
 		$this->setResult("id",$id);
+		$this->setResult("a",$a);
 		$this->setResult("response",200);
 		// $key = $this->getCache('some_key');
 		// if($key == false){
 		// 	$this->setCache("some_key","this is from memcache",0,30);
 		// }
-		return $this->result;
+		$this->resolve();
 	}
 
 	function index(){

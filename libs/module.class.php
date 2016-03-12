@@ -7,14 +7,17 @@ class Module {
 	protected $config   = array();
 	protected $argments = array();
 	protected $result 	= array("response"=>500,"responseText"=>'nil');
+	protected $appid	= 0;
+	protected $token    = '628';
 	function __construct($args){
-	    /* Class initialization code */
+	    /* 拿到配制文件 */
 	    $this->config = require("/../libs/config.class.php");
-	    $this->args = $args;
+	    //这里合并的是pathinfo
+	    $this->argments = array_merge($this->argments,$args);
 	    $this->config();
 	    $this->useSql();
 	}
-	
+
 	protected function useSql(){
 		require("/../libs/mysql.class.php");
 		$this->data = new Mysql($this->config["dbhost"], $this->config["dbuser"],$this->config["dbpass"],$this->config["dbname"],$this->config["prefix"], $this->config["charset"]);
@@ -36,6 +39,7 @@ class Module {
 			$this->cache->connect($memcachehost,$memcacheport) or die ("Could not connect");
 		}
 	}
+	//接下来都是cache的简便方法
 	protected function getCache($key){
 		if($this->cache){
 			return $this->cache->get($key);
@@ -71,9 +75,13 @@ class Module {
 		$this->result[trim($key)] = $value;
 	}
 
+	/**
+	 * 这里是拿客户端的一切参数
+	 * 
+	 */
 	protected function getArgs($key,$type=null,$default=null){
 		$value = $default;
-		if(isset($this->args[$key])) $value = $this->args[$key];
+		if(isset($this->argments[$key])) $value = $this->argments[$key];
 		if(isset($_GET[$key]))  	 $value = $_GET[$key];
 		if(isset($_POST[$key])) 	 $value = $_POST[$key];
 		if($type === ArgumentType::$NUMBER){
@@ -100,38 +108,50 @@ class Module {
 	}
 
 	/**
-	 * appid:1;
-	 * code:333333333;
-	 * 去掉code与appid(唯一确定用户的ID)
+	 * 这里都是对php POST的数据进行处理
 	 * 
 	 */ 
-	function check(){
-		if(isset($_POST["params"])){
-			$verfy  = $_POST["params"];
-			$arr 	= json_decode($verfy,true);
-			$appid 	= isset($arr["appid"])?$arr["appid"]:"";
-			$code  	= isset($arr["code"])?$arr["code"]:"";
-			unset($arr["code"]);
-			$token = $appid;
-			if(!$this->generateVerfyCode($arr,$token,$code)){
-				die('{"response":304,"responseText":"您的请求被拒绝"}');	
-			}
-
-		}else{
-			die('{"response":304,"responseText":"您的请求被拒绝"}');
+	protected function check(){
+		$data  = file_get_contents("php://input");
+		$pos   = strpos($data,',',0);
+		$this->appid = intval(substr($data,0,$pos));
+		$this->token = $this->getToken($this->appid);
+		$data  = substr($data,$pos+1);
+		$posts = json_decode(check::data_decode($data,$this->token),true);
+		$code  = $posts["code"];
+		unset($posts["code"]);
+		if(!check::generate_verfy_code($posts,$this->token,$code)){
+			$this->reject(304,'您的请求被拒绝');		
 		}
-
+		##合并到argment，方法$this->getArgs[""]能拿到参数
+		$this->argments = array_merge($this->argments,$posts);
 	}
-
-	function generateVerfyCode($param,$token,$code){  
-        $params_data = "";
-        ksort($param);
-        foreach( $param as $key=>$value ){  
-            $params_data=$params_data.$key.$value;  
-        }
-        $params_data = $params_data.$token;
-        return sha1($params_data) == $code;  
-}
+	/**
+	 * 失败或主动结束服务用$this->regject()
+	 * $code : 数字码
+	 * $text : 对应的文字描述
+	 */ 
+	protected function reject($code,$text){
+		$data = array();
+		$data["response"] 		= $code;
+		$data["responseText"]	= $text;
+		$r = check::generate_encode($data,$this->getToken($this->appid));
+		echo check::data_encode(json_encode($r),$this->getToken($this->appid));
+		die;
+	}
+	/**
+	 * 正常结束返回 
+	 */
+	protected function resolve(){
+		$r = check::generate_encode($this->result,$this->getToken($this->appid));
+		echo check::data_encode(json_encode($r),$this->getToken($this->appid));
+	}
+	/**
+	 * 这个方法根据自己项目情况自己修改，每一个用户的TOKEN肯定是不一样。
+	 */
+	protected function getToken($appid){
+		return "628";
+	}
 
 	// 析构函数
 	function __destruct(){
@@ -139,7 +159,6 @@ class Module {
 	}
 	function __call($a,$b){
 		//方法不存在
-		$this->setResult("responseText",$a . '方法不存在');
-		echo json_encode($this->result);
+		$this->reject(404,'您请求的方法不存在');
 	}
 }

@@ -126,5 +126,31 @@ class Check {
         }
         return base64_decode($code);
     }
+    public static function generate_verfy_code($param,$token,$code){
+        $params_data = "";
+        ksort($param);
+        foreach( $param as $key=>$value ){  
+            $params_data=$params_data.$key.$value;  
+        }
+        $params_data = $params_data.$token;
+        return sha1($params_data) == $code;  
+    }
+
+    public static function generate_encode($param,$token){
+        $params_data = "";
+        $time = explode (" ",microtime () );  
+        $time = $time[1] . ($time [0] * 1000);  
+        $time2 = explode ( ".", $time );  
+        $time = $time2[0];  
+        $params["timestamp"] = $time; 
+        ksort($param);
+        foreach( $param as $key=>$value ){  
+            $params_data=$params_data.$key.$value;  
+        }
+        $params_data = $params_data.$token;
+        $code = sha1($params_data);
+        $param["code"]=$code;
+        return $param;
+    }
 }
 ?>
