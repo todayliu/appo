@@ -1,7 +1,5 @@
 <?php
-include "/../libs/module.class.php";
 class App extends Module{
-	
 	function adlist(){
 		$this->check();
 		// $this->useCache();

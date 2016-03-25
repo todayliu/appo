@@ -12,6 +12,7 @@ define('MODULE_DIR', './module/');
 // $config = require("./libs/config.class.php");
 require("./libs/argument.class.php");
 require("./libs/check.class.php");
+require("./libs/module.class.php");
 //PATH_INFO是nginx里配制的
 $pathinfo=$_SERVER["PATH_INFO"];   //计算出index.php后面的字段 index.php/c/methon/id/3
 $pathinfo=trim($pathinfo,'/');
