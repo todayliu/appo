@@ -293,19 +293,56 @@ class Mysql {
         return intval($this->get_1("SELECT count(*) FROM $table $condition"));
     }
 
-    function insert($table, $array) {
-        $keys = array();
-        $values = array();
-        foreach ($array as $key => $value) {
-            $keys[] = "`" . $key . "`";
-            $values[] = "'" . $value . "'";
+    /**
+     * 简化插入insert
+     * @param $table        string           文件名
+     * @param $columnName   string|array     string:字段名,分开。array:key=>value
+     * @param $value        string|array     string:字段值,分开。array
+     * @example insert("tablename",array('a'=>1,'b'=>2));
+     * @example insert("tablename",'`a`,`b`',"1,1");
+     * @example insert("tablename",'`a`,`b`',array(0=>1,1=>2));
+     * @example insert("tablename",'`a`,`b`',array(0=>array(0=>1,1=>2),1=>array(0=>3,1=>4)));
+     *
+     * @return query
+     */
+    public function insert($table, $columnName, $value=NULL) {
+           //兼容方法写法
+        $sql="SELECT 0";
+        if(is_array($columnName) && empty($value)){
+            $keys = array();
+            $values = array();
+            foreach ($columnName as $key => $value) {
+                $keys[] = "`" . $key . "`";
+                $values[] = "'" . $value . "'";
+            }
+            $sql = "INSERT INTO {$table} (" . implode(",", $keys) . ")VALUES(" . implode(",", $values) . ")"; 
+        }else if (is_string($value)){
+            $sql="INSERT INTO $table ($columnName) VALUES ($value)";
+        }else if (is_array($value)){
+            if(is_array($value[0])){
+                $values = array();
+                foreach($value as $v){
+                     $values[] ="('" . implode("','",$v) . "')";         
+                }
+                $sql="INSERT INTO {$table} ({$columnName}) VALUES " . implode(",", $values);
+                unset($values);
+            }else if(is_string($value[0])){
+                $values=array();
+                foreach($value as $v){
+                     $values[] ="({$v})";         
+                }
+                $sql="INSERT INTO $table ({$columnName}) VALUES " . implode(",", $values);;
+            }else{
+                $values = array();
+                foreach ($value as $key => $value) {
+                    $values[] = "'" . $value . "'";
+                }
+                $sql = "INSERT INTO {$table} ({$columnName})VALUES(" . implode(",", $values) . ")"; 
+            }       
         }
-        $sql = @"INSERT INTO {$table} (" . implode(",", $keys) . ")VALUES(" . implode(",", $values) . ")";
-        $this->query($sql);
-        $num = $this->insert_id();
-        return $num;
+        return $this->query($sql);
     }
-
+ 
     function update($table, $array, $limit = NULL,$check = false) {
         $limit = $limit ? ' Where ' . $limit : "where";
         if($check){

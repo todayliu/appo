@@ -22,7 +22,12 @@ class App extends Module{
 		$this->setResult("response",200);
 		echo '请看module/app.class.php' . '<br />';
 		echo '请运行example/javascript/index.html'. '<br />';
-		$this->reject(200,'测试');
+		// $this->reject(200,'测试');
+		$this->data->insert("ecs_table",array('a'=>1,'b'=>2));
+		$this->data->insert("ecs_table",'`a`,`b`',"1,1");
+		$this->data->insert("ecs_table",'`a`,`b`',array(0=>1,1=>2));
+		$this->data->insert("ecs_table",'`a`,`b`',array(0=>array(0=>1,1=>2),1=>array(0=>3,1=>4)));
+		var_dump(1);
 	}
 
 	// 析构函数
