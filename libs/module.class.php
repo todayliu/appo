@@ -11,7 +11,7 @@ class Module {
 	protected $token    = '628';
 	function __construct($args){
 	    /* 拿到配制文件 */
-	    $this->config = require("./libs/config.class.php");
+	    $this->config = require(ROOT_PATH . "libs/config.class.php");
 	    //这里合并的是pathinfo
 	    $this->argments = array_merge($this->argments,$args);
 	    $this->config();
@@ -19,7 +19,7 @@ class Module {
 	}
 
 	protected function useSql(){
-		require("./libs/mysql.class.php");
+		require(ROOT_PATH . "libs/mysql.class.php");
 		$this->data = new Mysql($this->config["dbhost"], $this->config["dbuser"],$this->config["dbpass"],$this->config["dbname"],$this->config["prefix"], $this->config["charset"]);
 	}
 	protected function config(){

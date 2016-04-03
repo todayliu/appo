@@ -7,7 +7,7 @@
  */
 header("Content-type: text/html; charset=utf-8");
 date_default_timezone_set("PRC");
-
+define("ROOT_PATH", dirname(__FILE__) . "/");
 define('MODULE_DIR', './module/');
 // $config = require("./libs/config.class.php");
 require("./libs/argument.class.php");
